@@ -72,4 +72,26 @@ public class Hero : MonoBehaviour
         run,
         jump
     }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Border"))
+        {
+            QuitGame();
+        }
+        if (collision.gameObject.CompareTag("NextLvlPass"))
+        {
+            LoadNextLevel();
+        }
+    }
+    public void QuitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+        Application.Quit();
+    }
+    private void LoadNextLevel()
+    {
+        //*TODO.
+    }
 }
