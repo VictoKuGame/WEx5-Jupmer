@@ -1,17 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Hero : MonoBehaviour
 {
     [SerializeField] float speed;
-    [SerializeField] int lives;
     [SerializeField] float jumpForce;
+    [SerializeField] Slider HP;
+    [SerializeField] int BorderHitPoints;
+    [SerializeField] int MeteorHitPoints;
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer sprite;
     private bool isGrounded = false;
-
+    public Vector3 respawn ;
+    
     private States State
     {
         get { return (States)anim.GetInteger("state"); }
@@ -38,6 +43,8 @@ public class Hero : MonoBehaviour
     }
     private void Awake()
     {
+        HP = GameObject.Find("HPShow1").GetComponent<Slider>();
+        HP.value = 100;
         rb = GetComponent<Rigidbody2D>();
         sprite = GetComponentInChildren<SpriteRenderer>();
         anim = GetComponent<Animator>();
@@ -76,11 +83,38 @@ public class Hero : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Border"))
         {
-            QuitGame();
+            if (HP.value >= BorderHitPoints)
+            {
+                HP.value -= BorderHitPoints;
+                transform.position = respawn;
+            }
+            else
+            {
+                GameOverScreen1();
+            }
         }
         if (collision.gameObject.CompareTag("NextLvlPass"))
         {
             LoadNextLevel();
+        }
+        if (collision.gameObject.CompareTag("Finish."))
+        {
+            FinishScreen1();
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            if (HP.value >= MeteorHitPoints)
+            {
+                HP.value -= MeteorHitPoints;
+            }
+            else
+            {
+                GameOverScreen1();
+            }
         }
     }
     public void QuitGame()
@@ -92,6 +126,16 @@ public class Hero : MonoBehaviour
     }
     private void LoadNextLevel()
     {
-        //*TODO.
+        HP.value = 100;
+        SceneManager.LoadScene("Level2");
+    }
+    private void FinishScreen1()
+    {
+        SceneManager.LoadScene("Finish1");
+    }
+     private void GameOverScreen1()
+    {
+        SceneManager.LoadScene("GameOverS");
     }
 }
+
